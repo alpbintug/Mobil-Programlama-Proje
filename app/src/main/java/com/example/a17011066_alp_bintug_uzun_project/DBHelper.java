@@ -5,20 +5,30 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Color;
 import android.util.Log;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "mobil_project.db";
     public static final int DATABASE_VERSION = 1;
-
-
     public final int TROUSERS = 0;
     public final int HAT = 1;
     public final int T_SHIRT = 2;
     public final int COAT = 3;
     public final int TRUNKS = 4;
+    public final int DRESS = 5;
+    public final int SLIPPERS = 6;
+    public final int SHOES = 7;
+    public final int SKIRT = 8;
+    public final int SWEATER = 9;
+
 
 
     //region TABLE_CLOTHES
@@ -96,8 +106,9 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String CREATE_TABLE_EVENT = "CREATE TABLE "+TABLE_EVENT+"(" +
             COMBINE_ID+ " INTEGER NOT NULL, " +
             EVENT_TYPE + " TEXT NOT NULL, " +
-            EVENT_DATE + " DATE NOT NULL, " +
-            EVENT_ID+" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, " +
+            EVENT_DATE + " TEXT NOT NULL, " +
+            EVENT_ID+" INTEGER PRIMARY KEY AUTOINCREMENT" +
+            " UNIQUE, " +
             EVENT_NAME + " TEXT NOT NULL, "+
             EVENT_LOCATION + " TEXT NOT NULL"+
             ")";
@@ -130,6 +141,58 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // Create tables again
         onCreate(db);
+    }
+
+    public boolean AddCloth(Cloth cloth){
+        Log.d("price:",String.valueOf(cloth.getPrice()));
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+        cv.put(CLOTH_COLOR,cloth.getColor());
+        cv.put(CLOTH_DATE_PURCHASED,df.format(cloth.getDatePurchased()));
+        cv.put(CLOTH_PATTERN,cloth.getPattern());
+        cv.put(CLOTH_PHOTO,cloth.getPhotoPath());
+        cv.put(CLOTH_PRICE,cloth.getPrice());
+        cv.put(CLOTH_TYPE,cloth.getClothType());
+
+        long result = db.insert(TABLE_CLOTHES,null,cv);
+        db.close();
+        return  result!=-1;
+    }
+
+    public ArrayList<Cloth> GetClothes(int ID,boolean fromCombine) throws ParseException {
+        ArrayList<Cloth> clothes = new ArrayList<Cloth>();
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+        Date date;
+        String q;
+        if(ID>=0&&fromCombine){
+            q = "SELECT * FROM " + TABLE_COMBINE_CLOTHES + " WHERE " + COMBINE_ID + " = " + ID;
+        }
+        else if(ID>=0){
+
+            q = "SELECT * FROM " + TABLE_DRAWER_CLOTHES + " WHERE " + COMBINE_ID + " = " + ID;
+        }
+        else {
+            q = "SELECT * FROM " + TABLE_CLOTHES;
+        }
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(q,null);
+
+        for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()){
+            date = df.parse(cursor.getString(cursor.getColumnIndex(CLOTH_DATE_PURCHASED)));
+            clothes.add(new Cloth(
+                    cursor.getInt(cursor.getColumnIndex(CLOTH_TYPE)),
+                    cursor.getString(cursor.getColumnIndex(CLOTH_COLOR)),
+                    cursor.getString(cursor.getColumnIndex(CLOTH_PATTERN)),
+                    cursor.getFloat(cursor.getColumnIndex(CLOTH_PRICE)),
+                    date,
+                    cursor.getString(cursor.getColumnIndex(CLOTH_PHOTO))
+            ));
+        }
+
+        return clothes;
     }
 
     public void AddClothToCombine(int combineID, int clothID){

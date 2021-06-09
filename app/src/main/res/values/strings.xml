@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">17011066_Alp_Bintug_Uzun_Project</string>
+    <string-array name="clothTypes">
+        <item>Trousers</item>
+        <item>Hat</item>
+        <item>T-Shirt</item>
+        <item>Coat</item>
+        <item>Dress</item>
+        <item>Slippers</item>
+        <item>Shoes</item>
+        <item>Skirt</item>
+        <item>Sweater</item>
+    </string-array>
 </resources>

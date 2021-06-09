@@ -6,16 +6,18 @@ public class Event {
     private String location;
     private String date;
     private String name;
+    private Combine combine;
     //endregion
     //region CONSTRUCTORS & GETTERS & SETTERS
     public Event() {
     }
 
-    public Event(String eventType, String location, String date, String name) {
+    public Event(String eventType, String location, String date, String name,Combine combine) {
         this.eventType = eventType;
         this.location = location;
         this.date = date;
         this.name = name;
+        this.combine = combine;
     }
 
     public String getEventType() {
@@ -48,6 +50,14 @@ public class Event {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Combine getCombine() {
+        return combine;
+    }
+
+    public void setCombine(Combine combine) {
+        this.combine = combine;
     }
     //endregion
 }

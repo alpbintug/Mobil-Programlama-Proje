@@ -1,14 +1,14 @@
 package com.example.a17011066_alp_bintug_uzun_project;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class Combine {
     //region VARIABLES
-    private List<Cloth> clothes;
+    private ArrayList<Cloth> clothes;
     private String combineName;
     //endregion
     //region CONSTRUCTORS & GETTERS & SETTERS
-    public Combine(List<Cloth> clothes, String combineName) {
+    public Combine(ArrayList<Cloth> clothes, String combineName) {
         this.clothes = clothes;
         this.combineName = combineName;
     }
@@ -16,11 +16,11 @@ public class Combine {
     public Combine() {
     }
 
-    public List<Cloth> getClothes() {
+    public ArrayList<Cloth> getClothes() {
         return clothes;
     }
 
-    public void setClothes(List<Cloth> clothes) {
+    public void setClothes(ArrayList<Cloth> clothes) {
         this.clothes = clothes;
     }
 

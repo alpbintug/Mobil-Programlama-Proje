@@ -7,14 +7,14 @@ import java.util.Date;
 public class Cloth {
     //region VARIABLES
     private int clothType;
-    private Color color;
+    private String color;
     private String pattern;
     private float price;
     private Date datePurchased;
     private String photoPath;
     //endregion
     //region CONSTRUCTER & GETTER & SETTER
-    public Cloth(int clothType, Color color, String pattern, float price, Date datePurchased, String photoPath) {
+    public Cloth(int clothType, String color, String pattern, float price, Date datePurchased, String photoPath) {
         this.clothType = clothType;
         this.color = color;
         this.pattern = pattern;
@@ -34,11 +34,11 @@ public class Cloth {
         this.clothType = clothType;
     }
 
-    public Color getColor() {
+    public String getColor() {
         return color;
     }
 
-    public void setColor(Color color) {
+    public void setColor(String color) {
         this.color = color;
     }
 
