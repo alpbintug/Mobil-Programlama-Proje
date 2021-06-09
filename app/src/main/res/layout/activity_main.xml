@@ -6,13 +6,55 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+    <Button
+        android:id="@+id/button_Events"
+        android:layout_width="221dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="99dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="100dp"
+        android:text="Etkinlikler"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_Combines" />
+
+    <Button
+        android:id="@+id/button_Clothes"
+        android:layout_width="221dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="99dp"
+        android:layout_marginTop="196dp"
+        android:layout_marginEnd="100dp"
+        android:text="Kıyafetler"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/button_Drawers"
+        android:layout_width="221dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="99dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="100dp"
+        android:text="Çekmeceler"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_Clothes" />
+
+    <Button
+        android:id="@+id/button_Combines"
+        android:layout_width="221dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="99dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="100dp"
+        android:text="Kombinler"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_Drawers" />
 </androidx.constraintlayout.widget.ConstraintLayout>

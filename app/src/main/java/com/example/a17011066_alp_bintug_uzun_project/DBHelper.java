@@ -42,15 +42,18 @@ public class DBHelper extends SQLiteOpenHelper {
             CLOTH_ID+" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE" +
             ")";
     //endregion
+
     //region TABLE_DRAWER
     public static final String TABLE_DRAWER = "Drawers";
 
     public static final String DRAWER_ID = "Drawer_ID";
-    public static final String DRAWER_CLOTH_TYPE = "Cloth_Type";
+    public static final String DRAWER_CLOTH_TYPE = "Drawer_Cloth_Type";
+    public static final String DRAWER_TAG = "Drawer_Tag";
 
     public static final String CREATE_TABLE_DRAWER = "CREATE TABLE "+TABLE_DRAWER+"(" +
             DRAWER_CLOTH_TYPE+" INTEGER NOT NULL, " +
-            DRAWER_ID+" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE" +
+            DRAWER_ID+" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, " +
+            DRAWER_TAG + " TEXT NOT NULL"+
             ")";
     //endregion
 
@@ -59,17 +62,25 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static final String CREATE_TABLE_DRAWER_CLOTHES = "CREATE TABLE "+TABLE_DRAWER_CLOTHES+"(" +
             CLOTH_ID+" INTEGER NOT NULL, " +
-            DRAWER_ID+" INTEGER PRIMARY KEY NOT NULL UNIQUE" +
+            DRAWER_ID+" INTEGER NOT NULL" +
+            ")";
+    //endregion
+
+    //region TABLE_COMBINE_CLOTHES
+    public static final String TABLE_COMBINE_CLOTHES = "Combine_Clothes";
+    public static final String COMBINE_ID = "Combine_ID";
+    public static final String CREATE_TABLE_COMBINE_CLOTHES= "CREATE TABLE "+TABLE_COMBINE_CLOTHES+"(" +
+            CLOTH_ID+" INTEGER NOT NULL, " +
+            COMBINE_ID+" INTEGER NOT NULL" +
             ")";
     //endregion
 
     //region TABLE_COMBINES
-    public static final String TABLE_COMBINES = "Combines";
-    public static final String COMBINE_ID = "Combine_ID";
-
+    public static final String TABLE_COMBINES= "Combines";
+    public static final String COMBINE_NAME = "Combine_Name";
     public static final String CREATE_TABLE_COMBINES= "CREATE TABLE "+TABLE_COMBINES+"(" +
-            CLOTH_ID+" INTEGER NOT NULL, " +
-            COMBINE_ID+" INTEGER NOT NULL" +
+            COMBINE_NAME+" TEXT NOT NULL, " +
+            COMBINE_ID+" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL" +
             ")";
     //endregion
 
@@ -79,12 +90,16 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String EVENT_ID = "Event_ID";
     public static final String EVENT_TYPE = "Event_Type";
     public static final String EVENT_DATE = "Event_Date";
+    public static final String EVENT_NAME = "Event_Name";
+    public static final String EVENT_LOCATION = "Event_Location";
 
     public static final String CREATE_TABLE_EVENT = "CREATE TABLE "+TABLE_EVENT+"(" +
             COMBINE_ID+ " INTEGER NOT NULL, " +
             EVENT_TYPE + " TEXT NOT NULL, " +
             EVENT_DATE + " DATE NOT NULL, " +
-            EVENT_ID+" INTEGER PRIMARY KEY NOT NULL UNIQUE" +
+            EVENT_ID+" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, " +
+            EVENT_NAME + " TEXT NOT NULL, "+
+            EVENT_LOCATION + " TEXT NOT NULL"+
             ")";
 
     //endregion
@@ -99,6 +114,7 @@ public class DBHelper extends SQLiteOpenHelper {
     db.execSQL(CREATE_TABLE_DRAWER_CLOTHES);
     db.execSQL(CREATE_TABLE_DRAWER);
     db.execSQL(CREATE_TABLE_CLOTHES);
+    db.execSQL(CREATE_TABLE_COMBINE_CLOTHES);
     }
 
     @Override
@@ -110,6 +126,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DRAWER_CLOTHES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_DRAWER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CLOTHES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMBINE_CLOTHES);
 
         // Create tables again
         onCreate(db);
