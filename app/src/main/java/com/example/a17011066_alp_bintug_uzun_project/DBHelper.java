@@ -188,11 +188,33 @@ public class DBHelper extends SQLiteOpenHelper {
                     cursor.getString(cursor.getColumnIndex(CLOTH_PATTERN)),
                     cursor.getFloat(cursor.getColumnIndex(CLOTH_PRICE)),
                     date,
-                    cursor.getString(cursor.getColumnIndex(CLOTH_PHOTO))
+                    cursor.getString(cursor.getColumnIndex(CLOTH_PHOTO)),
+                    cursor.getInt(cursor.getColumnIndex(CLOTH_ID))
             ));
         }
-
         return clothes;
+    }
+    public boolean DeleteCloth(int ClothID){
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result =  db.delete(TABLE_CLOTHES, CLOTH_ID+"=?",new String[]{String.valueOf(ClothID)});
+        db.close();
+        return result>0;
+    }
+
+    public boolean UpdateCloth(Cloth cloth){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+        cv.put(CLOTH_TYPE,cloth.getClothType());
+        cv.put(CLOTH_PRICE,cloth.getPrice());
+        cv.put(CLOTH_PHOTO,cloth.getPhotoPath());
+        cv.put(CLOTH_PATTERN,cloth.getPattern());
+        cv.put(CLOTH_COLOR,cloth.getColor());
+        cv.put(CLOTH_DATE_PURCHASED,df.format(cloth.getDatePurchased()));
+        long result = db.update(TABLE_CLOTHES, cv, CLOTH_ID + "=?",new String[]{String.valueOf(cloth.getID())});
+        db.close();
+        return result > 0;
     }
 
     public void AddClothToCombine(int combineID, int clothID){

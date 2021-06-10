@@ -12,20 +12,31 @@ public class Cloth {
     private float price;
     private Date datePurchased;
     private String photoPath;
+    private int ID;
+
+
     //endregion
     //region CONSTRUCTER & GETTER & SETTER
-    public Cloth(int clothType, String color, String pattern, float price, Date datePurchased, String photoPath) {
+    public Cloth(int clothType, String color, String pattern, float price, Date datePurchased, String photoPath,int ID) {
         this.clothType = clothType;
         this.color = color;
         this.pattern = pattern;
         this.price = price;
         this.datePurchased = datePurchased;
         this.photoPath = photoPath;
+        this.ID = ID;
     }
 
     public Cloth() {
     }
 
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
     public int getClothType() {
         return clothType;
     }

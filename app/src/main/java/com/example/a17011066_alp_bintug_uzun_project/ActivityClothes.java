@@ -85,6 +85,7 @@ public class ActivityClothes extends AppCompatActivity {
             Button buttonEdit = (Button)viewToAdd.findViewById(R.id.buttonSave);
             imageCloth = (ImageView)viewToAdd.findViewById(R.id.imageViewCloth);
             Spinner dropdown = (Spinner)viewToAdd.findViewById(R.id.spinnerClothType);
+            Button buttonDelete = (Button)viewToAdd.findViewById(R.id.buttonDelete);
 
             textPattern.setText(cloth.getPattern());
             textDate.setText(dateFormat.format(cloth.getDatePurchased()));
@@ -101,6 +102,7 @@ public class ActivityClothes extends AppCompatActivity {
             textRedValue.setEnabled(false);
             imageCloth.setEnabled(false);
             dropdown.setEnabled(false);
+            buttonDelete.setVisibility(View.VISIBLE);
 
             adapter = ArrayAdapter.createFromResource(this,R.array.clothTypes, android.R.layout.simple_spinner_item);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -157,6 +159,7 @@ public class ActivityClothes extends AppCompatActivity {
         EditText textColor = (EditText)parentView.findViewById(R.id.editTextColor);
         ImageView imageCloth = (ImageView)parentView.findViewById(R.id.imageViewCloth);
         Spinner dropdown = (Spinner)viewToAdd.findViewById(R.id.spinnerClothType);
+        Button buttonDelete = (Button)parentView.findViewById(R.id.buttonDelete);
 
 
         if(buttonEdit.getText().toString().equals("SAVE")){
@@ -201,7 +204,7 @@ public class ActivityClothes extends AppCompatActivity {
             textPrice.setEnabled(false);
             dropdown.setEnabled(false);
             imageCloth.setEnabled(false);
-
+            buttonDelete.setVisibility(View.VISIBLE);
             Cloth cloth = new Cloth(type,color,pattern,price,datePurchased,photoPath);
             if(!db.AddCloth(cloth)){
                 Toast.makeText(this,"Cannot add the clothing, please make sure all areas are filled.",Toast.LENGTH_LONG).show();
