@@ -15,9 +15,9 @@ import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity {
-
     private  DBHelper db;
     private int STORAGE_PERMISSION = 1;
     Activity main;
@@ -29,18 +29,19 @@ public class MainActivity extends AppCompatActivity {
 
         db = new DBHelper(this);
         main = MainActivity.this;
-        Log.d("name","name");
         if(ContextCompat.checkSelfPermission(main, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
             requestStoragePermission();
         }
 
-        Log.d("name","xddd");
-        //this.deleteDatabase(db.getDatabaseName());
     }
 
     public void buttonClothes(View view){
         Intent open = new Intent(getApplicationContext(),ActivityClothes.class);
+        startActivity(open);
+    }
+    public void buttonDrawers(View view){
+        Intent open = new Intent(getApplicationContext(),ActivityDrawers.class);
         startActivity(open);
     }
     private void requestStoragePermission(){

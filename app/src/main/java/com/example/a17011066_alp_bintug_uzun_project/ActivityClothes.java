@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DateFormat;
@@ -48,6 +49,7 @@ public class ActivityClothes extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_clothes);
+        getSupportActionBar().hide();
 
         db = new DBHelper(this);
         layout = (LinearLayout)findViewById(R.id.clothesLinearList);
@@ -86,15 +88,17 @@ public class ActivityClothes extends AppCompatActivity {
             imageCloth = (ImageView)viewToAdd.findViewById(R.id.imageViewCloth);
             Spinner dropdown = (Spinner)viewToAdd.findViewById(R.id.spinnerClothType);
             Button buttonDelete = (Button)viewToAdd.findViewById(R.id.buttonDelete);
+            TextView textID = (TextView)viewToAdd.findViewById(R.id.textClothID);
 
             textPattern.setText(cloth.getPattern());
             textDate.setText(dateFormat.format(cloth.getDatePurchased()));
             textPrice.setText(String.valueOf(cloth.getPrice()));
             textRedValue.setText(cloth.getColor());
+            textID.setText(String.valueOf(cloth.getID()));
             buttonEdit.setText("EDIT");
 
             imageCloth.setImageDrawable(Drawable.createFromPath(cloth.getPhotoPath()));
-            imageCloth.setTag(cloth.getClothType());
+            imageCloth.setTag(cloth.getPhotoPath());
 
             textPattern.setEnabled(false);
             textDate.setEnabled(false);
@@ -110,9 +114,7 @@ public class ActivityClothes extends AppCompatActivity {
 
             viewToAdd.findViewById(R.id.cardCloth).setBackgroundColor(bgc);
 
-
             layout.addView(viewToAdd);
-
         }
     }
 
@@ -157,6 +159,7 @@ public class ActivityClothes extends AppCompatActivity {
         EditText textDate = (EditText)parentView.findViewById(R.id.editTextDate);
         EditText textPrice = (EditText)parentView.findViewById(R.id.editTexPrice);
         EditText textColor = (EditText)parentView.findViewById(R.id.editTextColor);
+        TextView textID = (TextView)parentView.findViewById(R.id.textClothID);
         ImageView imageCloth = (ImageView)parentView.findViewById(R.id.imageViewCloth);
         Spinner dropdown = (Spinner)viewToAdd.findViewById(R.id.spinnerClothType);
         Button buttonDelete = (Button)parentView.findViewById(R.id.buttonDelete);
@@ -205,20 +208,36 @@ public class ActivityClothes extends AppCompatActivity {
             dropdown.setEnabled(false);
             imageCloth.setEnabled(false);
             buttonDelete.setVisibility(View.VISIBLE);
-            Cloth cloth = new Cloth(type,color,pattern,price,datePurchased,photoPath);
-            if(!db.AddCloth(cloth)){
-                Toast.makeText(this,"Cannot add the clothing, please make sure all areas are filled.",Toast.LENGTH_LONG).show();
-                return;
-            }
 
-            calculateColors();
-            int bgc = Color.argb(alpha,rgb[0],rgb[1],rgb[2]);
-            parentView.setBackgroundColor(bgc);
-            addEmptyCard();
+            if(textID.getText().toString().length()>0){
+
+                int ID = Integer.parseInt(textID.getText().toString());
+                Cloth cloth = new Cloth(type,color,pattern,price,datePurchased,photoPath,ID);
+                if(!db.UpdateCloth(cloth)){
+                    Toast.makeText(this,"Cannot update the clothing information, please make sure all areas are filled.",Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+            else {
+                Cloth cloth = new Cloth(type,color,pattern,price,datePurchased,photoPath,-1);
+                if (!db.AddCloth(cloth)) {
+                    Toast.makeText(this, "Cannot add the clothing, please make sure all areas are filled.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                calculateColors();
+                int bgc = Color.argb(alpha,rgb[0],rgb[1],rgb[2]);
+                parentView.setBackgroundColor(bgc);
+                addEmptyCard();
+            }
             buttonEdit.setText("EDIT");
         }
         else{
-
+            textPattern.setEnabled(true);
+            textDate.setEnabled(true);
+            textColor.setEnabled(true);
+            textPrice.setEnabled(true);
+            dropdown.setEnabled(true);
+            imageCloth.setEnabled(true);
             buttonEdit.setText("SAVE");
         }
     }
@@ -229,6 +248,14 @@ public class ActivityClothes extends AppCompatActivity {
         intent.setAction(Intent.ACTION_PICK);
         imageCloth = (ImageView)view;
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+    }
+    public void ButtonDeleteCloth(View view){
+        ViewGroup parentView = (ViewGroup)view.getParent();
+        TextView textID = (TextView)parentView.findViewById(R.id.textClothID);
+        int ID = Integer.parseInt(textID.getText().toString());
+        if(db.DeleteCloth(ID)){
+            parentView.removeAllViews();
+        }
     }
 
     @Override

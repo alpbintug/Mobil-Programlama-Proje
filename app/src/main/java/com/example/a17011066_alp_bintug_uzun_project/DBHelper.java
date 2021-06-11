@@ -144,7 +144,6 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public boolean AddCloth(Cloth cloth){
-        Log.d("price:",String.valueOf(cloth.getPrice()));
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
@@ -166,11 +165,30 @@ public class DBHelper extends SQLiteOpenHelper {
         Date date;
         String q;
         if(ID>=0&&fromCombine){
-            q = "SELECT * FROM " + TABLE_COMBINE_CLOTHES + " WHERE " + COMBINE_ID + " = " + ID;
+            q = "SELECT " +
+                    TABLE_CLOTHES + "." + CLOTH_ID + " AS " +CLOTH_ID +", " +
+                    TABLE_CLOTHES + "." + CLOTH_COLOR + " AS " +CLOTH_COLOR +", " +
+                    TABLE_CLOTHES + "." + CLOTH_DATE_PURCHASED + " AS " +CLOTH_DATE_PURCHASED +", " +
+                    TABLE_CLOTHES + "." + CLOTH_PATTERN + " AS " +CLOTH_PATTERN +", " +
+                    TABLE_CLOTHES + "." + CLOTH_PHOTO + " AS " +CLOTH_PHOTO +", " +
+                    TABLE_CLOTHES + "." + CLOTH_TYPE + " AS " +CLOTH_TYPE +", " +
+                    TABLE_CLOTHES + "." + CLOTH_PRICE + " AS " +CLOTH_PRICE +
+                    " FROM " + TABLE_COMBINE_CLOTHES + ", " + TABLE_CLOTHES +
+                    " WHERE " + COMBINE_ID + " = " + ID +
+                    " AND " + TABLE_COMBINE_CLOTHES + "." + CLOTH_ID  + " = "+ TABLE_CLOTHES + "." + CLOTH_ID;
         }
         else if(ID>=0){
-
-            q = "SELECT * FROM " + TABLE_DRAWER_CLOTHES + " WHERE " + COMBINE_ID + " = " + ID;
+            q = "SELECT " +
+                    TABLE_CLOTHES + "." + CLOTH_ID + " AS " +CLOTH_ID +", " +
+                    TABLE_CLOTHES + "." + CLOTH_COLOR + " AS " +CLOTH_COLOR +", " +
+                    TABLE_CLOTHES + "." + CLOTH_DATE_PURCHASED + " AS " +CLOTH_DATE_PURCHASED +", " +
+                    TABLE_CLOTHES + "." + CLOTH_PATTERN + " AS " +CLOTH_PATTERN +", " +
+                    TABLE_CLOTHES + "." + CLOTH_PHOTO + " AS " +CLOTH_PHOTO +", " +
+                    TABLE_CLOTHES + "." + CLOTH_TYPE + " AS " +CLOTH_TYPE +", " +
+                    TABLE_CLOTHES + "." + CLOTH_PRICE + " AS " +CLOTH_PRICE +
+                    " FROM " + TABLE_DRAWER_CLOTHES + ", " + TABLE_CLOTHES +
+                    " WHERE " + DRAWER_ID + " = " + ID +
+                    " AND " + TABLE_DRAWER_CLOTHES + "." + CLOTH_ID  + " = "+ TABLE_CLOTHES + "." + CLOTH_ID;
         }
         else {
             q = "SELECT * FROM " + TABLE_CLOTHES;
@@ -222,7 +240,16 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COMBINE_ID,combineID);
         cv.put(CLOTH_ID,clothID);
-        db.insert(TABLE_COMBINES,null,cv);
+        db.insert(TABLE_COMBINE_CLOTHES,null,cv);
+        cv.clear();
+        db.close();
+    }
+    public void AddClothToDrawer(int drawerID, int clothID){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(DRAWER_ID,drawerID);
+        cv.put(CLOTH_ID,clothID);
+        db.insert(TABLE_DRAWER_CLOTHES,null,cv);
         cv.clear();
         db.close();
     }
@@ -234,6 +261,41 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         cursor.close();
         return count;
+    }
+    public  ArrayList<Drawer> GetDrawers(){
+        String q = "SELECT * FROM " + TABLE_DRAWER;
+        ArrayList<Drawer> drawers = new ArrayList<Drawer>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(q,null);
+
+        for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()){
+            drawers.add(new Drawer(
+                    cursor.getInt(cursor.getColumnIndex(DRAWER_CLOTH_TYPE)),
+                    cursor.getString(cursor.getColumnIndex(DRAWER_TAG)),
+                    cursor.getInt(cursor.getColumnIndex(DRAWER_ID))
+            ));
+        }
+        return drawers;
+    }
+    public boolean AddDrawer(Drawer drawer){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(DRAWER_TAG,drawer.getTag());
+        cv.put(DRAWER_CLOTH_TYPE,drawer.getClothType());
+
+        long result = db.insert(TABLE_DRAWER,null,cv);
+        db.close();
+        return  result!=-1;
+    }
+    public boolean UpdateDrawer(Drawer drawer){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(DRAWER_TAG,drawer.getTag());
+        cv.put(DRAWER_CLOTH_TYPE,drawer.getClothType());
+        long result = db.update(TABLE_DRAWER, cv, DRAWER_ID + "=?",new String[]{String.valueOf(drawer.getID())});
+        db.close();
+        return result > 0;
     }
 
 }

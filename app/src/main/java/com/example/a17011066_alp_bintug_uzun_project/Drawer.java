@@ -1,29 +1,33 @@
 package com.example.a17011066_alp_bintug_uzun_project;
 
+import android.graphics.drawable.Drawable;
+
 import java.util.List;
 
 public class Drawer {
     //region VARIABLES
-    private List<Cloth> clothes;
     private int clothType;
+    private String tag;
+    private int ID;
     //endregion
     //region CONTRUCTORS & GETTERS & SETTERS
-    public Drawer(List<Cloth> clothes, int clothType) {
-        this.clothes = clothes;
+
+    public Drawer( int clothType,String tag, int ID){
         this.clothType = clothType;
+        this.tag = tag;
+        this.ID = ID;
     }
 
     public Drawer() {
     }
 
-    public List<Cloth> getClothes() {
-        return clothes;
+    public int getID() {
+        return ID;
     }
 
-    public void setClothes(List<Cloth> clothes) {
-        this.clothes = clothes;
+    public void setID(int ID) {
+        this.ID = ID;
     }
-
     public int getClothType() {
         return clothType;
     }
@@ -31,15 +35,15 @@ public class Drawer {
     public void setClothType(int clothType) {
         this.clothType = clothType;
     }
-    //endregion
-    //region ADDITIONAL FUNCTIONS
-    public boolean changeClothType(int clothType){
-        if(clothType<5&&clothType>=0){
-            this.clothType = clothType;
-            clothes.clear();
-            return true;
-        }
-        return false;
+
+    public String getTag() {
+        return tag;
     }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
     //endregion
+
 }
