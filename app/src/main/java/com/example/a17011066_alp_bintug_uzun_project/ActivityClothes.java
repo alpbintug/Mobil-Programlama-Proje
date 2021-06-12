@@ -38,6 +38,13 @@ public class ActivityClothes extends AppCompatActivity {
     LinearLayout layout;
     View viewToAdd;
     int[] rgb = {255,110,0};
+    int SOURCE;
+    int MAIN_MENU = 0;
+    int DRAWERS = 1;
+    int COMBINES = 2;
+    int SOURCE_ID;
+    int CLOTH_TYPE;
+    int COMBINE_ID;
     ArrayAdapter<CharSequence> adapter;
     int alpha = 255;
     int lastTo255 = 0;
@@ -49,7 +56,18 @@ public class ActivityClothes extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_clothes);
-        getSupportActionBar().hide();
+
+        Intent intent = getIntent();
+
+        SOURCE = intent.getIntExtra("SOURCE",-1);
+        SOURCE_ID = intent.getIntExtra("SOURCE_ID",-1);
+        CLOTH_TYPE = intent.getIntExtra("CLOTH_TYPE",-1);
+        COMBINE_ID = intent.getIntExtra("COMBINE_ID",-1);
+        String tag = intent.getStringExtra("TAG");
+        if(tag!=null)
+            getSupportActionBar().setTitle(tag);
+        else
+            getSupportActionBar().hide();
 
         db = new DBHelper(this);
         layout = (LinearLayout)findViewById(R.id.clothesLinearList);
@@ -61,17 +79,22 @@ public class ActivityClothes extends AppCompatActivity {
         Spinner dropdown = (Spinner)viewToAdd.findViewById(R.id.spinnerClothType);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dropdown.setAdapter(adapter);
-
-        try {
+        if(SOURCE == MAIN_MENU){
             ArrayList<Cloth> clothes = db.GetClothes(-1,false);
-            PlaceClothes(clothes);
-        } catch (ParseException e) {
-            e.printStackTrace();
+            PlaceClothes(clothes,false);
+            addEmptyCard();
         }
-        addEmptyCard();
+        else {
+            ArrayList<Cloth> drawerClothes = db.GetClothes(SOURCE_ID,false);
+            ArrayList<Cloth> clothesWODrawer = db.GetClothesWODrawer();
+            clothesWODrawer.removeIf(e -> e.getClothType()!=CLOTH_TYPE);
+            PlaceClothes(drawerClothes,true);
+            if(SOURCE==DRAWERS)
+                PlaceClothes(clothesWODrawer,false);
+        }
     }
 
-    private void PlaceClothes(ArrayList<Cloth> clothes){
+    private void PlaceClothes(ArrayList<Cloth> clothes, boolean isInDrawer){
         for(Cloth cloth: clothes){
 
             viewToAdd = LayoutInflater.from(this).inflate(R.layout.cloth_item,null);
@@ -96,6 +119,21 @@ public class ActivityClothes extends AppCompatActivity {
             textRedValue.setText(cloth.getColor());
             textID.setText(String.valueOf(cloth.getID()));
             buttonEdit.setText("EDIT");
+
+            if(SOURCE==MAIN_MENU){
+                buttonDelete.setBackgroundColor(Color.rgb(100,0,0));
+                buttonDelete.setText("X");
+            }
+            else{
+                if(SOURCE == DRAWERS && isInDrawer){
+                    buttonDelete.setBackgroundColor(Color.rgb(100,0,0));
+                    buttonDelete.setText("X");
+                }
+                else{
+                    buttonDelete.setBackgroundColor(Color.rgb(0,100,0));
+                    buttonDelete.setText("+");
+                }
+            }
 
             imageCloth.setImageDrawable(Drawable.createFromPath(cloth.getPhotoPath()));
             imageCloth.setTag(cloth.getPhotoPath());
@@ -224,6 +262,7 @@ public class ActivityClothes extends AppCompatActivity {
                     Toast.makeText(this, "Cannot add the clothing, please make sure all areas are filled.", Toast.LENGTH_LONG).show();
                     return;
                 }
+                textID.setText(String.valueOf(db.lastClothID()));
                 calculateColors();
                 int bgc = Color.argb(alpha,rgb[0],rgb[1],rgb[2]);
                 parentView.setBackgroundColor(bgc);
@@ -251,10 +290,31 @@ public class ActivityClothes extends AppCompatActivity {
     }
     public void ButtonDeleteCloth(View view){
         ViewGroup parentView = (ViewGroup)view.getParent();
+        Button button = (Button)view;
         TextView textID = (TextView)parentView.findViewById(R.id.textClothID);
+
         int ID = Integer.parseInt(textID.getText().toString());
-        if(db.DeleteCloth(ID)){
-            parentView.removeAllViews();
+        if(button.getText().toString().equals("X"))
+        {
+            if(SOURCE==MAIN_MENU){
+                if(db.DeleteCloth(ID)){
+                    parentView.removeAllViews();
+                }
+            }
+            else{
+                if(db.RemoveClothFromDrawer(SOURCE_ID,ID)){
+                    button.setText("+");
+                    button.setBackgroundColor(Color.rgb(0,100,0));
+                }
+            }
+        }
+        else{
+            if(SOURCE==COMBINES)
+                db.AddClothToCombine(COMBINE_ID,ID);
+            else
+                db.AddClothToDrawer(SOURCE_ID,ID);
+            button.setText("X");
+            button.setBackgroundColor(Color.rgb(100,0,0));
         }
     }
 

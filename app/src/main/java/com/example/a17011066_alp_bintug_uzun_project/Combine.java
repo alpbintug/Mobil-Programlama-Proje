@@ -4,24 +4,24 @@ import java.util.ArrayList;
 
 public class Combine {
     //region VARIABLES
-    private ArrayList<Cloth> clothes;
     private String combineName;
+    private int ID;
     //endregion
     //region CONSTRUCTORS & GETTERS & SETTERS
-    public Combine(ArrayList<Cloth> clothes, String combineName) {
-        this.clothes = clothes;
+    public Combine(String combineName, int ID) {
         this.combineName = combineName;
+        this.ID = ID;
     }
 
     public Combine() {
     }
 
-    public ArrayList<Cloth> getClothes() {
-        return clothes;
+    public int getID() {
+        return ID;
     }
 
-    public void setClothes(ArrayList<Cloth> clothes) {
-        this.clothes = clothes;
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     public String getCombineName() {

@@ -2,6 +2,7 @@ package com.example.a17011066_alp_bintug_uzun_project;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -25,14 +26,25 @@ public class ActivityDrawers extends AppCompatActivity {
     int colorChange = 17;
     LinearLayout layout;
     View viewToAdd;
-    int[] rgb = {255,110,0};
+    int[] rgb = {255,160,0};
+    int clothType;
+    int combineID;
     ArrayAdapter<CharSequence> adapter;
     private DBHelper db;
+    String combine = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawers);
 
+        Intent intent = getIntent();
+        combine = intent.getStringExtra("TAG");
+        clothType = intent.getIntExtra("TYPE",-1);
+        combineID = intent.getIntExtra("COMBINE_ID",-1);
+        if(combine!=null)
+            getSupportActionBar().setTitle(combine);
+        else
+            getSupportActionBar().hide();
         layout = (LinearLayout)findViewById(R.id.drawersLinearList);
         db = new DBHelper(this);
         viewToAdd = LayoutInflater.from(this).inflate(R.layout.drawer_item,null);
@@ -42,7 +54,7 @@ public class ActivityDrawers extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dropdown.setAdapter(adapter);
 
-        ArrayList<Drawer> drawers = db.GetDrawers();
+        ArrayList<Drawer> drawers = db.GetDrawers(clothType);
 
         PlaceDrawers(drawers);
 
@@ -135,7 +147,6 @@ public class ActivityDrawers extends AppCompatActivity {
             int ID = -1;
             String tag = textTag.getText().toString();
             int type = dropdown.getSelectedItemPosition();
-
             if(textID.getText().toString().length()!=0){
                 ID = Integer.parseInt(textID.getText().toString());
                 Drawer drawer = new Drawer(type,tag,ID);
@@ -150,6 +161,7 @@ public class ActivityDrawers extends AppCompatActivity {
                     Toast.makeText(this,"Cannot create the drawer",Toast.LENGTH_LONG).show();
                     return;
                 }
+                textID.setText(String.valueOf(db.lastDrawerID()));
                 calculateColors();
                 int bgc = Color.argb(alpha,rgb[0],rgb[1],rgb[2]);
                 parentView.setBackgroundColor(bgc);
@@ -166,5 +178,34 @@ public class ActivityDrawers extends AppCompatActivity {
             textTag.setEnabled(true);
             buttonEdit.setText("SAVE");
         }
+    }
+    public void deleteDrawer(View view){
+        Button buttonEdit = (Button)view;
+        ViewGroup parentView = (ViewGroup)view.getParent();
+        TextView textID = (TextView) parentView.findViewById(R.id.textViewDrawerID);
+        int ID =Integer.parseInt(textID.getText().toString());
+        if(db.DeleteDrawer(ID))
+            parentView.removeAllViews();
+    }
+    public void editClothes(View view){
+        ViewGroup parentView = (ViewGroup)view.getParent();
+        TextView textID = (TextView) parentView.findViewById(R.id.textViewDrawerID);
+        EditText textTag = (EditText) parentView.findViewById(R.id.editTextDrawerTag);
+        int ID = Integer.parseInt(textID.getText().toString());
+        Intent open = new Intent(getApplicationContext(),ActivityClothes.class);
+        Spinner dropdown = (Spinner) parentView.findViewById(R.id.spinnerDrawerClothType);
+        open.putExtra("CLOTH_TYPE",dropdown.getSelectedItemPosition());
+        open.putExtra("SOURCE_ID",ID);
+        if(combine!=null) {
+            open.putExtra("TAG", combine);
+            open.putExtra("SOURCE",2);
+            open.putExtra("COMBINE_ID",combineID);
+
+        }
+        else {
+            open.putExtra("TAG", textTag.getText().toString());
+            open.putExtra("SOURCE",1);
+        }
+        startActivity(open);
     }
 }

@@ -33,15 +33,18 @@ public class MainActivity extends AppCompatActivity {
         {
             requestStoragePermission();
         }
-
     }
-
     public void buttonClothes(View view){
         Intent open = new Intent(getApplicationContext(),ActivityClothes.class);
+        open.putExtra("SOURCE",0);
         startActivity(open);
     }
     public void buttonDrawers(View view){
         Intent open = new Intent(getApplicationContext(),ActivityDrawers.class);
+        startActivity(open);
+    }
+    public void buttonCombines(View view){
+        Intent open = new Intent(getApplicationContext(),ActivityCombines.class);
         startActivity(open);
     }
     private void requestStoragePermission(){

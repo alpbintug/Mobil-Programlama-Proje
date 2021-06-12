@@ -2,12 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:id="@+id/cardCombine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
@@ -19,6 +21,171 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <Button
+                android:id="@+id/buttonLegs"
+                android:layout_width="101dp"
+                android:layout_height="97dp"
+                android:layout_marginTop="191dp"
+                android:enabled="false"
+                android:onClick="GetLowerBodyDrawers"
+                android:text="CHANGE LEGS"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buttonHead" />
+
+            <Button
+                android:id="@+id/buttonTorso"
+                android:layout_width="101dp"
+                android:layout_height="97dp"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="117dp"
+                android:enabled="false"
+                android:onClick="GetUpperBodyDrawers"
+                android:text="CHANGE TORSO"
+                app:layout_constraintStart_toEndOf="@+id/imageViewBody"
+                app:layout_constraintTop_toBottomOf="@+id/buttonShareCombine" />
+
+            <Button
+                android:id="@+id/buttonFoot"
+                android:layout_width="101dp"
+                android:layout_height="97dp"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="166dp"
+                android:enabled="false"
+                android:onClick="GetFootDrawers"
+                android:text="CHANGE FEET"
+                app:layout_constraintStart_toEndOf="@+id/imageViewBody"
+                app:layout_constraintTop_toBottomOf="@+id/buttonTorso" />
+
+            <ImageButton
+                android:id="@+id/buttonShareCombine"
+                android:layout_width="49dp"
+                android:layout_height="39dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="1dp"
+                app:layout_constraintStart_toEndOf="@+id/buttonChangeCombineClothes"
+                app:layout_constraintTop_toBottomOf="@+id/buttonDeleteCombine"
+                app:srcCompat="?attr/actionModeShareDrawable" />
+
+            <Button
+                android:id="@+id/buttonEditCombine"
+                android:layout_width="200dp"
+                android:layout_height="39dp"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="5dp"
+                android:onClick="ButtonEditCombine"
+                android:text="SAVE"
+                app:layout_constraintStart_toEndOf="@+id/editTextCombineName"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imageViewBody"
+                android:layout_width="200dp"
+                android:layout_height="511dp"
+                android:layout_marginStart="101dp"
+                android:onClick="changeGender"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editTextCombineName"
+                app:srcCompat="@drawable/male" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="16dp"
+                android:text="Combine Name:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/editTextCombineName"
+                android:layout_width="145dp"
+                android:layout_height="46dp"
+                android:layout_marginTop="2dp"
+                android:ems="10"
+                android:hint="Combine Name"
+                android:inputType="textPersonName"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+            <Button
+                android:id="@+id/buttonChangeCombineClothes"
+                android:layout_width="200dp"
+                android:layout_height="39dp"
+                android:layout_marginStart="1dp"
+                android:enabled="false"
+                android:text="CLOTHES"
+                app:layout_constraintStart_toEndOf="@+id/editTextCombineName"
+                app:layout_constraintTop_toBottomOf="@+id/buttonEditCombine" />
+
+            <ImageView
+                android:id="@+id/imageViewHead"
+                android:layout_width="82dp"
+                android:layout_height="77dp"
+                android:layout_marginStart="160dp"
+                android:layout_marginTop="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/buttonChangeCombineClothes" />
+
+
+            <ImageView
+                android:id="@+id/imageViewLowerBody"
+                android:layout_width="209dp"
+                android:layout_height="269dp"
+                android:layout_marginStart="96dp"
+                android:layout_marginTop="120dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imageViewHead" />
+
+            <ImageView
+                android:id="@+id/imageViewFoot"
+                android:layout_width="118dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="140dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageViewLowerBody" />
+
+            <TextView
+                android:id="@+id/textViewCombineID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="1dp"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/buttonHead"
+                android:layout_width="101dp"
+                android:layout_height="97dp"
+                android:layout_marginTop="4dp"
+                android:enabled="false"
+                android:onClick="GetHeadDrawers"
+                android:text="CHANGE HEAD"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editTextCombineName" />
+
+            <Button
+                android:id="@+id/buttonDeleteCombine"
+                android:layout_width="45dp"
+                android:layout_height="39dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="5dp"
+                android:enabled="false"
+                android:onClick="deleteCombine"
+                android:text="X"
+                app:layout_constraintStart_toEndOf="@+id/buttonEditCombine"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imageViewUpperBody"
+                android:layout_width="149dp"
+                android:layout_height="147dp"
+                android:layout_marginStart="124dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageViewHead" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
