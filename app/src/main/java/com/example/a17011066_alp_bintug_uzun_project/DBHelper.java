@@ -104,7 +104,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String EVENT_LOCATION = "Event_Location";
 
     public static final String CREATE_TABLE_EVENT = "CREATE TABLE "+TABLE_EVENT+"(" +
-            COMBINE_ID+ " INTEGER NOT NULL, " +
+            COMBINE_ID+ " INTEGER, " +
             EVENT_TYPE + " TEXT NOT NULL, " +
             EVENT_DATE + " TEXT NOT NULL, " +
             EVENT_ID+" INTEGER PRIMARY KEY AUTOINCREMENT" +
@@ -319,6 +319,12 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return result>0;
     }
+    public boolean RemoveClothFromCombine(int combineID,int clothID){
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result =  db.delete(TABLE_COMBINE_CLOTHES, CLOTH_ID+"=? AND " + COMBINE_ID +"=?",new String[]{String.valueOf(clothID),String.valueOf(combineID)});
+        db.close();
+        return result>0;
+    }
     public int GetCombineSize(int combineID){
         String q = "SELECT * FROM " + TABLE_COMBINES + " WHERE " + COMBINE_ID + " = " + combineID;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -328,24 +334,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         return count;
     }
-    public  ArrayList<Drawer> GetDrawers(int ClothType){
-        String q = "SELECT * FROM " + TABLE_DRAWER;
-        if(ClothType>-1)
-            q+= " WHERE " + DRAWER_CLOTH_TYPE + "=" + ClothType;
-        ArrayList<Drawer> drawers = new ArrayList<Drawer>();
-        SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery(q,null);
-
-        for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()){
-            drawers.add(new Drawer(
-                    cursor.getInt(cursor.getColumnIndex(DRAWER_CLOTH_TYPE)),
-                    cursor.getString(cursor.getColumnIndex(DRAWER_TAG)),
-                    cursor.getInt(cursor.getColumnIndex(DRAWER_ID))
-            ));
-        }
-        return drawers;
-    }
     public  ArrayList<Combine> GetCombines(){
         String q = "SELECT * FROM " + TABLE_COMBINES;
         ArrayList<Combine> combines = new ArrayList<Combine>();
@@ -376,6 +365,97 @@ public class DBHelper extends SQLiteOpenHelper {
         long result = db.update(TABLE_COMBINES, cv, COMBINE_ID + "=?",new String[]{String.valueOf(combine.getID())});
         db.close();
         return result > 0;
+    }
+    public  ArrayList<Event> GetEvents(){
+        String q = "SELECT * FROM " + TABLE_EVENT;
+        ArrayList<Event> events = new ArrayList<Event>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+        Date date;
+
+        Cursor cursor = db.rawQuery(q,null);
+
+        for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()){
+            try {
+                date = df.parse(cursor.getString(cursor.getColumnIndex(EVENT_DATE)));
+                events.add(new Event(
+                        cursor.getString(cursor.getColumnIndex(EVENT_TYPE)),
+                        cursor.getString(cursor.getColumnIndex(EVENT_LOCATION)),
+                        date,
+                        cursor.getString(cursor.getColumnIndex(EVENT_NAME)),
+                        cursor.getInt(cursor.getColumnIndex(EVENT_ID))
+                ));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return events;
+    }
+    public Combine GetEventCombine(int eventID){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String q = "SELECT * FROM " + TABLE_COMBINES +
+                " WHERE " + COMBINE_ID + " IN ( SELECT " + COMBINE_ID + " FROM " + TABLE_EVENT +
+                " WHERE " + EVENT_ID + " = " + eventID + ")";
+
+        Cursor cursor = db.rawQuery(q,null);
+        if(cursor.moveToFirst()){
+            return new Combine(
+                    cursor.getString(cursor.getColumnIndex(COMBINE_NAME)),
+                    cursor.getInt(cursor.getColumnIndex(COMBINE_ID)));
+        }
+        return null;
+    }
+    public boolean AddEvent(Event event){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+        cv.put(EVENT_DATE,df.format(event.getDate()));
+        cv.put(COMBINE_ID,-1);
+        cv.put(EVENT_LOCATION,event.getLocation());
+        cv.put(EVENT_NAME,event.getName());
+        cv.put(EVENT_TYPE,event.getEventType());
+        long result = db.insert(TABLE_EVENT,null,cv);
+        db.close();
+        return  result!=-1;
+    }
+    public boolean UpdateEvent(Event event){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+        cv.put(EVENT_DATE,df.format(event.getDate()));
+        cv.put(EVENT_LOCATION,event.getLocation());
+        cv.put(EVENT_NAME,event.getName());
+        cv.put(EVENT_TYPE,event.getEventType());
+        long result = db.update(TABLE_EVENT, cv, EVENT_ID + "=?",new String[]{String.valueOf(event.getID())});
+        db.close();
+        return result > 0;
+    }
+    public boolean ChangeEventCombine(int eventID,int combineID){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COMBINE_ID,combineID);
+        long result = db.update(TABLE_EVENT, cv, EVENT_ID + "=?",new String[]{String.valueOf(eventID)});
+        db.close();
+        return result > 0;
+    }
+    public  ArrayList<Drawer> GetDrawers(int ClothType){
+        String q = "SELECT * FROM " + TABLE_DRAWER;
+        if(ClothType>-1)
+            q+= " WHERE " + DRAWER_CLOTH_TYPE + "=" + ClothType;
+        ArrayList<Drawer> drawers = new ArrayList<Drawer>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(q,null);
+
+        for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()){
+            drawers.add(new Drawer(
+                    cursor.getInt(cursor.getColumnIndex(DRAWER_CLOTH_TYPE)),
+                    cursor.getString(cursor.getColumnIndex(DRAWER_TAG)),
+                    cursor.getInt(cursor.getColumnIndex(DRAWER_ID))
+            ));
+        }
+        return drawers;
     }
     public boolean AddDrawer(Drawer drawer){
         SQLiteDatabase db = this.getWritableDatabase();

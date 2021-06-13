@@ -21,7 +21,8 @@ import java.util.ArrayList;
 
 public class ActivityDrawers extends AppCompatActivity {
 
-    int alpha = 255;
+    int alpha = 250;
+    int alphaEmpty = 200;
     int lastTo255 = 0;
     int colorChange = 17;
     LinearLayout layout;
@@ -89,7 +90,7 @@ public class ActivityDrawers extends AppCompatActivity {
             adapter = ArrayAdapter.createFromResource(this, R.array.clothTypes, android.R.layout.simple_spinner_item);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             dropdown.setAdapter(adapter);
-
+            dropdown.setSelection(drawer.getClothType());
             viewToAdd.findViewById(R.id.cardDrawer).setBackgroundColor(bgc);
 
 
@@ -100,7 +101,7 @@ public class ActivityDrawers extends AppCompatActivity {
     private void addEmptyCard(){
         calculateColors();
         viewToAdd = LayoutInflater.from(this).inflate(R.layout.drawer_item,null);
-        int bgc = Color.argb((int)(alpha*0.22),rgb[0],rgb[1],rgb[2]);
+        int bgc = Color.argb(alphaEmpty,rgb[0],rgb[1],rgb[2]);
         ((Button)viewToAdd.findViewById(R.id.buttonEditDrawer)).setText("SAVE");
         viewToAdd.findViewById(R.id.cardDrawer).setBackgroundColor(bgc);
 

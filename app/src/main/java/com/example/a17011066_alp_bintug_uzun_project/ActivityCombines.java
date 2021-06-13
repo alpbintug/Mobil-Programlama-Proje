@@ -1,10 +1,14 @@
 package com.example.a17011066_alp_bintug_uzun_project;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -21,10 +25,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ActivityCombines extends AppCompatActivity {
-    int alpha = 255;
+    int alpha = 250;
+    int alphaEmpty = 200;
     int lastTo255 = 0;
     int colorChange = 17;
     LinearLayout layout;
@@ -32,24 +41,45 @@ public class ActivityCombines extends AppCompatActivity {
     boolean GenderMale = true;
     int[] rgb = {255,160,0};
     ArrayList<Integer> clothes;
+    int EventID;
+    int EventCombineID = -1;
+    String EventName = null;
     ArrayAdapter<CharSequence> adapter;
     private DBHelper db;
     String combine = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_combines);
-        getSupportActionBar().hide();
         clothes = new ArrayList<Integer>();
-
-        db = new DBHelper(this);
+        Intent intent = getIntent();
+        EventName = intent.getStringExtra("TAG");
+        EventID = intent.getIntExtra("EVENT_ID",-1);
         layout = (LinearLayout)findViewById(R.id.combinesLinearList);
         viewToAdd = LayoutInflater.from(this).inflate(R.layout.combine_item, null);
-        ArrayList<Combine> combines = db.GetCombines();
-        PlaceCombines(combines);
-        addEmptyCard();
+        db = new DBHelper(this);
+        if(EventID==-1) {
+            getSupportActionBar().hide();
+            ArrayList<Combine> combines = db.GetCombines();
+            PlaceCombines(combines,false);;
+            addEmptyCard();
+        }
+        else {
+            getSupportActionBar().setTitle(EventName);
+            Combine EventCombine = db.GetEventCombine(EventID);
+            ArrayList<Combine> combines = db.GetCombines();
+            if(EventCombine!=null) {
+                EventCombineID = EventCombine.getID();
+                ArrayList<Combine> _EventCombine = new ArrayList<>();
+                _EventCombine.add(EventCombine);
+                PlaceCombines(_EventCombine, true);
+                combines.removeIf(e -> e.getID()==EventCombine.getID());
+            }
+            PlaceCombines(combines,true);
+        }
     }
-    private void PlaceCombines(ArrayList<Combine> combines) {
+    private void PlaceCombines(ArrayList<Combine> combines, boolean isEventCombine) {
         for (Combine combine : combines) {
 
             viewToAdd = LayoutInflater.from(this).inflate(R.layout.combine_item, null);
@@ -85,6 +115,20 @@ public class ActivityCombines extends AppCompatActivity {
             buttonEdit.setText("EDIT");
 
 
+
+            if(isEventCombine){
+                buttonDelete.setBackgroundColor(Color.rgb(0,100,0));
+                buttonDelete.setText("+");
+            }
+            else{
+                buttonDelete.setBackgroundColor(Color.rgb(100,0,0));
+                buttonDelete.setText("X");
+            }
+            if(EventCombineID==combine.getID()){
+                buttonDelete.setVisibility(View.INVISIBLE);
+                viewToAdd.findViewById(R.id.cardCombine).setBackgroundColor(Color.WHITE);
+            }
+
             textName.setEnabled(false);
             buttonChangeClothes.setEnabled(true);
             buttonDelete.setEnabled(true);
@@ -106,13 +150,32 @@ public class ActivityCombines extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         clothes = new ArrayList<Integer>();
-        db = new DBHelper(this);
+        Intent intent = getIntent();
+        EventName = intent.getStringExtra("TAG");
+        EventID = intent.getIntExtra("EVENT_ID",-1);
         layout = (LinearLayout)findViewById(R.id.combinesLinearList);
         layout.removeAllViews();
         viewToAdd = LayoutInflater.from(this).inflate(R.layout.combine_item, null);
-        ArrayList<Combine> combines = db.GetCombines();
-        PlaceCombines(combines);
-        addEmptyCard();
+        db = new DBHelper(this);
+        if(EventID==-1) {
+            getSupportActionBar().hide();
+            ArrayList<Combine> combines = db.GetCombines();
+            PlaceCombines(combines,false);;
+            addEmptyCard();
+        }
+        else {
+            getSupportActionBar().setTitle(EventName);
+            Combine EventCombine = db.GetEventCombine(EventID);
+            ArrayList<Combine> combines = db.GetCombines();
+            if(EventCombine!=null) {
+                EventCombineID = EventCombine.getID();
+                ArrayList<Combine> _EventCombine = new ArrayList<>();
+                _EventCombine.add(EventCombine);
+                PlaceCombines(_EventCombine, true);
+                combines.removeIf(e -> e.getID()==EventCombine.getID());
+            }
+            PlaceCombines(combines,true);
+        }
     }
     public void GetLowerBodyDrawers(View view){
         ViewGroup parentView = (ViewGroup)view.getParent();
@@ -135,6 +198,89 @@ public class ActivityCombines extends AppCompatActivity {
         open.putExtra("TYPE",type);
         open.putExtra("COMBINE_ID",Integer.parseInt(textID.getText().toString()));
         startActivity(open);
+    }
+    public void ButtonClothes(View view){
+        ViewGroup parentView = (ViewGroup)view.getParent();
+        TextView textID = (TextView) parentView.findViewById(R.id.textViewCombineID);
+        Intent open = new Intent(getApplicationContext(),ActivityClothes.class);
+        open.putExtra("SOURCE",2);
+        open.putExtra("CLOTH_TYPE",-1);
+        open.putExtra("COMBINE_ID",Integer.parseInt(textID.getText().toString()));
+        open.putExtra("SOURCE_ID",Integer.parseInt(textID.getText().toString()));
+        startActivity(open);
+    }
+    public void shareCombine(View view){
+        ViewGroup parentView = (ViewGroup)view.getParent();
+        TextView textViewName = (TextView) parentView.findViewById(R.id.textViewCombineName);
+        EditText textName = (EditText) parentView.findViewById(R.id.editTextCombineName);
+        Button buttonTorso = (Button) parentView.findViewById(R.id.buttonTorso);
+        Button buttonEdit = (Button) parentView.findViewById(R.id.buttonEditCombine);
+        Button buttonClothes = (Button) parentView.findViewById(R.id.buttonChangeCombineClothes);
+        Button buttonDelete = (Button) parentView.findViewById(R.id.buttonDeleteCombine);
+        ImageButton buttonShare = (ImageButton) parentView.findViewById(R.id.buttonShareCombine);
+        Button buttonLegs = (Button) parentView.findViewById(R.id.buttonLegs);
+        Button buttonHead = (Button) parentView.findViewById(R.id.buttonHead);
+        Button buttonFoot = (Button) parentView.findViewById(R.id.buttonFoot);
+
+        textName.setVisibility(View.INVISIBLE);
+        textViewName.setVisibility(View.INVISIBLE);
+        buttonTorso.setVisibility(View.INVISIBLE);
+        buttonEdit.setVisibility(View.INVISIBLE);
+        buttonClothes.setVisibility(View.INVISIBLE);
+        buttonDelete.setVisibility(View.INVISIBLE);
+        buttonShare.setVisibility(View.INVISIBLE);
+        buttonLegs.setVisibility(View.INVISIBLE);
+        buttonHead.setVisibility(View.INVISIBLE);
+        buttonFoot.setVisibility(View.INVISIBLE);
+        Drawable bg = parentView.getBackground();
+        parentView.setBackgroundColor(Color.rgb(255,255,255));
+        parentView.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(parentView.getDrawingCache());
+        parentView.setDrawingCacheEnabled(false);
+        parentView.setBackground(bg);
+        textName.setVisibility(View.VISIBLE);
+        textViewName.setVisibility(View.VISIBLE);
+        buttonTorso.setVisibility(View.VISIBLE);
+        buttonEdit.setVisibility(View.VISIBLE);
+        buttonClothes.setVisibility(View.VISIBLE);
+        buttonDelete.setVisibility(View.VISIBLE);
+        buttonShare.setVisibility(View.VISIBLE);
+        buttonLegs.setVisibility(View.VISIBLE);
+        buttonHead.setVisibility(View.VISIBLE);
+        buttonFoot.setVisibility(View.VISIBLE);
+
+        File cachePath = new File(getExternalCacheDir(), "my_images/");
+        cachePath.mkdirs();
+
+        //create png file
+        File file = new File(cachePath, "Image_123.png");
+        FileOutputStream fileOutputStream;
+        try
+        {
+            fileOutputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        //---Share File---//
+        //get file uri
+        Uri myImageFileUri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file);
+
+        //create a intent
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.putExtra(Intent.EXTRA_STREAM, myImageFileUri);
+        intent.setType("image/png");
+        startActivity(Intent.createChooser(intent, "Share with"));
     }
     public void GetFootDrawers(View view){
         ViewGroup parentView = (ViewGroup)view.getParent();
@@ -234,7 +380,7 @@ public class ActivityCombines extends AppCompatActivity {
     private void addEmptyCard(){
         calculateColors();
         viewToAdd = LayoutInflater.from(this).inflate(R.layout.combine_item,null);
-        int bgc = Color.argb((int)(alpha*0.22),rgb[0],rgb[1],rgb[2]);
+        int bgc = Color.argb(alphaEmpty,rgb[0],rgb[1],rgb[2]);
         ((Button)viewToAdd.findViewById(R.id.buttonEditCombine)).setText("SAVE");
         viewToAdd.findViewById(R.id.cardCombine).setBackgroundColor(bgc);
         layout.addView(viewToAdd);
@@ -263,11 +409,18 @@ public class ActivityCombines extends AppCompatActivity {
         image.setImageDrawable(drawableBody);
     }
     public void deleteCombine(View view){
-        Button buttonEdit = (Button)view;
+        Button buttonDelete = (Button)view;
         ViewGroup parentView = (ViewGroup)view.getParent();
         TextView textID = (TextView) parentView.findViewById(R.id.textViewCombineID);
         int ID =Integer.parseInt(textID.getText().toString());
-        if(db.DeleteCombine(ID))
-            parentView.removeAllViews();
+        if(buttonDelete.getText().toString().equals("X")) {
+            if (db.DeleteCombine(ID))
+                parentView.removeAllViews();
+        }
+        else{
+            if(db.ChangeEventCombine(EventID,ID)){
+                this.finish();
+            }
+        }
     }
 }

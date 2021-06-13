@@ -4,60 +4,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/main"
+    android:backgroundTintMode="add"
     tools:context=".MainActivity">
 
     <Button
         android:id="@+id/button_Events"
-        android:layout_width="221dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="99dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
         android:layout_marginTop="28dp"
-        android:layout_marginEnd="100dp"
+        android:background="?android:attr/fastScrollTrackDrawable"
+        android:onClick="buttonEvents"
         android:text="EVENTS"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_Combines" />
 
     <Button
         android:id="@+id/button_Clothes"
-        android:layout_width="221dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="99dp"
-        android:layout_marginTop="196dp"
-        android:layout_marginEnd="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="112dp"
+        android:background="?android:attr/fastScrollTrackDrawable"
         android:onClick="buttonClothes"
         android:text="CLOTHES"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button_Drawers"
-        android:layout_width="221dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="99dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
         android:layout_marginTop="28dp"
-        android:layout_marginEnd="100dp"
+        android:background="?android:attr/fastScrollTrackDrawable"
         android:onClick="buttonDrawers"
         android:text="DRAWERS"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.444"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_Clothes" />
 
     <Button
         android:id="@+id/button_Combines"
-        android:layout_width="221dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="99dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
         android:layout_marginTop="28dp"
-        android:layout_marginEnd="100dp"
+        android:background="?android:attr/fastScrollTrackDrawable"
         android:onClick="buttonCombines"
         android:text="COMBINES"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.444"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_Drawers" />
 </androidx.constraintlayout.widget.ConstraintLayout>

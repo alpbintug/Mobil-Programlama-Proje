@@ -47,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
         Intent open = new Intent(getApplicationContext(),ActivityCombines.class);
         startActivity(open);
     }
+    public void buttonEvents(View view){
+        Intent open = new Intent(getApplicationContext(),ActivityEvents.class);
+        startActivity(open);
+    }
     private void requestStoragePermission(){
         if(ActivityCompat.shouldShowRequestPermissionRationale(main,Manifest.permission.READ_EXTERNAL_STORAGE)){
             new AlertDialog.Builder(main)

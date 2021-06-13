@@ -33,6 +33,8 @@ import java.util.Date;
 
 public class ActivityClothes extends AppCompatActivity {
 
+    int alpha = 250;
+    int alphaEmpty = 200;
     public static final int PICK_IMAGE = 1;
     DateFormat dateFormat;
     LinearLayout layout;
@@ -46,7 +48,6 @@ public class ActivityClothes extends AppCompatActivity {
     int CLOTH_TYPE;
     int COMBINE_ID;
     ArrayAdapter<CharSequence> adapter;
-    int alpha = 255;
     int lastTo255 = 0;
     int colorChange = 17;
     private DBHelper db;
@@ -85,9 +86,9 @@ public class ActivityClothes extends AppCompatActivity {
             addEmptyCard();
         }
         else {
-            ArrayList<Cloth> drawerClothes = db.GetClothes(SOURCE_ID,false);
+            ArrayList<Cloth> drawerClothes = db.GetClothes(SOURCE_ID,CLOTH_TYPE<0);
             ArrayList<Cloth> clothesWODrawer = db.GetClothesWODrawer();
-            clothesWODrawer.removeIf(e -> e.getClothType()!=CLOTH_TYPE);
+            clothesWODrawer.removeIf(e -> e.getClothType()!=CLOTH_TYPE || CLOTH_TYPE<0);
             PlaceClothes(drawerClothes,true);
             if(SOURCE==DRAWERS)
                 PlaceClothes(clothesWODrawer,false);
@@ -120,12 +121,18 @@ public class ActivityClothes extends AppCompatActivity {
             textID.setText(String.valueOf(cloth.getID()));
             buttonEdit.setText("EDIT");
 
+
             if(SOURCE==MAIN_MENU){
                 buttonDelete.setBackgroundColor(Color.rgb(100,0,0));
                 buttonDelete.setText("X");
             }
-            else{
+            else
+                {
                 if(SOURCE == DRAWERS && isInDrawer){
+                    buttonDelete.setBackgroundColor(Color.rgb(100,0,0));
+                    buttonDelete.setText("X");
+                }
+                else if(CLOTH_TYPE<0){
                     buttonDelete.setBackgroundColor(Color.rgb(100,0,0));
                     buttonDelete.setText("X");
                 }
@@ -149,7 +156,7 @@ public class ActivityClothes extends AppCompatActivity {
             adapter = ArrayAdapter.createFromResource(this,R.array.clothTypes, android.R.layout.simple_spinner_item);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             dropdown.setAdapter(adapter);
-
+            dropdown.setSelection(cloth.getClothType());
             viewToAdd.findViewById(R.id.cardCloth).setBackgroundColor(bgc);
 
             layout.addView(viewToAdd);
@@ -159,7 +166,7 @@ public class ActivityClothes extends AppCompatActivity {
     private void addEmptyCard(){
         calculateColors();
         viewToAdd = LayoutInflater.from(this).inflate(R.layout.cloth_item,null);
-        int bgc = Color.argb((int)(alpha*0.22),rgb[0],rgb[1],rgb[2]);
+        int bgc = Color.argb(alphaEmpty,rgb[0],rgb[1],rgb[2]);
         ((Button)viewToAdd.findViewById(R.id.buttonSave)).setText("SAVE");
         viewToAdd.findViewById(R.id.cardCloth).setBackgroundColor(bgc);
         imageCloth = (ImageView)viewToAdd.findViewById(R.id.imageViewCloth);
@@ -302,9 +309,17 @@ public class ActivityClothes extends AppCompatActivity {
                 }
             }
             else{
-                if(db.RemoveClothFromDrawer(SOURCE_ID,ID)){
-                    button.setText("+");
-                    button.setBackgroundColor(Color.rgb(0,100,0));
+                if(CLOTH_TYPE>=0) {
+                    if (db.RemoveClothFromDrawer(SOURCE_ID, ID)) {
+                        button.setText("+");
+                        button.setBackgroundColor(Color.rgb(0, 100, 0));
+                    }
+                }
+                else{
+                    if(db.RemoveClothFromCombine(COMBINE_ID,ID)){
+                        button.setText("+");
+                        button.setBackgroundColor(Color.rgb(0, 100, 0));
+                    }
                 }
             }
         }

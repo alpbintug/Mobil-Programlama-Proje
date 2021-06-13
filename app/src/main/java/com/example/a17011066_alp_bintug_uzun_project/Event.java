@@ -1,23 +1,33 @@
 package com.example.a17011066_alp_bintug_uzun_project;
 
+import java.util.Date;
+
 public class Event {
     //region VARIABLES
     private String eventType;
     private String location;
-    private String date;
+    private Date date;
     private String name;
-    private Combine combine;
+    private int ID;
     //endregion
     //region CONSTRUCTORS & GETTERS & SETTERS
     public Event() {
     }
 
-    public Event(String eventType, String location, String date, String name,Combine combine) {
+    public Event(String eventType, String location, Date date, String name,int ID) {
         this.eventType = eventType;
         this.location = location;
         this.date = date;
         this.name = name;
-        this.combine = combine;
+        this.ID = ID;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     public String getEventType() {
@@ -36,11 +46,11 @@ public class Event {
         this.location = location;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
@@ -52,12 +62,5 @@ public class Event {
         this.name = name;
     }
 
-    public Combine getCombine() {
-        return combine;
-    }
-
-    public void setCombine(Combine combine) {
-        this.combine = combine;
-    }
     //endregion
 }
